@@ -17,7 +17,7 @@
  * @file
  */
 
-namespace MediaWiki\Extension\BoilerPlate;
+namespace MediaWiki\Extension\OAuth;
 
 class Hooks implements \MediaWiki\Hook\BeforePageDisplayHook {
 
@@ -27,9 +27,10 @@ class Hooks implements \MediaWiki\Hook\BeforePageDisplayHook {
 	 * @param \Skin $skin
 	 */
 	public function onBeforePageDisplay( $out, $skin ): void {
+
 		$config = $out->getConfig();
-		if ( $config->get( 'BoilerPlateVandalizeEachPage' ) ) {
-			$out->addHTML( \Html::element( 'p', [], 'BoilerPlate was here' ) );
+		if (true || $config->get( 'OCDLAShowOnEachPage' ) ) {
+			$out->addHTML( \Html::element( 'p', [], 'OCDLA OAuth extension was here' ) );
 			$out->addModules( 'oojs-ui-core' );
 		}
 	}

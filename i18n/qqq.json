@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Your Name"
+			"Trevor Uehlin"
 		]
 	},
-	"boilerplate-desc": "{{desc|name=Boilerplate|url=https://www.mediawiki.org/wiki/Extension:Boilerplate}}"
+	"oAuth-desc": "{{desc|name=OAuth|url=https://github.com/ocdladefense/wiki-extension-oauth.git}}"
 }

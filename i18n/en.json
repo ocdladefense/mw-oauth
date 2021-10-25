@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Your Name"
+			"Trevor Uehlin"
 		]
 	},
-	"boilerplate-desc": "This is an example extension"
+	"oauth-desc": "This is the OCDLA OAuth extension"
 }

@@ -1,10 +1,10 @@
 ( function () {
 
 	/**
-	 * @class mw.boilerPlate
+	 * @class mw.
 	 * @singleton
 	 */
-	mw.boilerPlate = {
+	mw.oAuth = {
 	};
 
 }() );
