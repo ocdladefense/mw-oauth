@@ -1,4 +1,7 @@
 {
+	"name": "ocdladefense/wiki-extension-oauth",
+    "description": "A mediawiki extension for OAuth.",
+    "type": "wordpress-theme",
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "38.0.0",
 		"mediawiki/minus-x": "1.1.1",
@@ -16,5 +19,15 @@
 			"phpcbf"
 		],
 		"phpcs": "phpcs -sp --cache"
-	}
+	},
+    "config": {
+        "preferred-install": {
+            "ocdladefense/*": "source"
+        }
+    },
+    "require": {
+        "ocdladefense/lib-oauth-config": "~2.0",
+        "ocdladefense/lib-salesforce-rest-api":"~3.0",
+        "ocdladefense/lib-http":"~3.0"
+    }
 }
