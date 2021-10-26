@@ -30,6 +30,8 @@ class Hooks implements \MediaWiki\Hook\BeforePageDisplayHook {
 
 			$credentials = $mgr->getAccessToken();
 
+			unset($_GET["code"]);
+
 			var_dump($credentials, $_SESSION, $_GET);exit;
 		}
 	}
