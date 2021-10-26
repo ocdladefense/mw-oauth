@@ -2,3 +2,5 @@
 /vendor
 /node_modules
 .eslintcache
+/config/config.php
+/log
