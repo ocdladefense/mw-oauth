@@ -14,13 +14,9 @@
 		"MediaWiki\\Extension\\OAuth\\": "includes/"
 	},
 	"config": {
-		"OAuthEnableFoo": {
-			"description": "Enable the Foo feature.",
-			"value": true
-		},
-		"OAuthVandalizeEachPage": {
-			"description": "Write 'OAuth was here' on each page",
-			"value": false
+		"OAuthTestConfigurationItem": {
+			"description": "This is a test.",
+			"value": "This is the test configuration"
 		}
 	},
 	"HookHandlers": {

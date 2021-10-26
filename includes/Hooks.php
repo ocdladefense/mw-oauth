@@ -3,8 +3,9 @@
 
 namespace MediaWiki\Extension\OAuth;
 
-use \Salesforce\OAuthConfig;
-use \Salesforce\OAuth;
+
+require(__DIR__ . "/../config/config.php");
+
 
 class Hooks implements \MediaWiki\Hook\BeforePageDisplayHook {
 
@@ -13,17 +14,23 @@ class Hooks implements \MediaWiki\Hook\BeforePageDisplayHook {
 	 * @param \OutputPage $out
 	 * @param \Skin $skin
 	 */
-	public function onBeforePageDisplay($outputPage, $skin): void {
 
-		$shouldDoLogin = $outputPage->getPageTitle() == "Log in";
+	public function onBeforePageDisplay($out, $skin): void {
 
-		if($shouldDoLogin) {
+		$shouldDoLogin = $out->getPageTitle() == "Log in";
 
-			var_dump($outputPage);exit;
+		$mgr = new OAuthManager();
 
-			// $out->addHTML( \Html::element( 'p', [], 'THIS IS ONLY SHOWING ON THE LOGIN PAGE!' ) );
-			// $out->addModules( 'oojs-ui-core' );
+		if($shouldDoLogin  && !$mgr->identityProviderCredentialsAccepted()) {
+
+			$mgr->requireAuth();
+		}
+
+		if($mgr->identityProviderCredentialsAccepted()) {
+
+			$credentials = $mgr->getAccessToken();
+
+			var_dump($credentials, $_SESSION, $_GET);exit;
 		}
 	}
-
 }
