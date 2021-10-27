@@ -13,6 +13,9 @@
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\OAuth\\": "includes/"
 	},
+	"AutoloadClasses":{
+		"SpecialOAuthEndpoint":"SpecialOAuthEndpoint.php"
+	},
 	"config": {
 		"OAuthTestConfigurationItem": {
 			"description": "This is a test.",
@@ -20,12 +23,15 @@
 		}
 	},
 	"HookHandlers": {
-		"OAuthHooks": {
-			"class": "MediaWiki\\Extension\\OAuth\\Hooks"
+		"LinkHook": {
+			"class": "MediaWiki\\Extension\\OAuth\\HookAddLink"
 		}
 	},
 	"Hooks": {
-		"BeforePageDisplay": "OAuthHooks"
+		"PersonalUrls": "LinkHook"
+	},
+	"SpecialPages": {
+		"OAuthEndpoint": "SpecialOAuthEndpoint"
 	},
 	"MessagesDirs": {
 		"OAuth": [

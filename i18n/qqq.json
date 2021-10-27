@@ -4,5 +4,9 @@
 			"Trevor Uehlin"
 		]
 	},
-	"oAuth-desc": "{{desc|name=OAuth|url=https://github.com/ocdladefense/wiki-extension-oauth.git}}"
+	"oAuth-desc": "{{desc|name=OAuth|url=https://github.com/ocdladefense/wiki-extension-oauth.git}}",
+	"oauth-summary": "Description appearing on top of Special:MyExtension.",
+	"action-oauth": "{{doc-action|myextension}}",
+	"right-oauth": "{{doc-right|myextension}}",
+	"oauth": "The name of the extension's entry in Special:SpecialPages"
 }

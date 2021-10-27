@@ -35,7 +35,7 @@ class OAuthManager {
     }
     
     // Normally we determine whether the user has logged in by checking the session.
-    public function identityProviderCredentialsAccepted(){
+    public static function identityProviderCredentialsAccepted(){
     
         return !empty($_GET["code"]);
     }

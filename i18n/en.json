@@ -4,5 +4,12 @@
 			"Trevor Uehlin"
 		]
 	},
-	"oauth-desc": "This is the OCDLA OAuth extension"
+	"oauth-desc": "This is the OCDLA OAuth extension",
+	"oauth": "My Extension",
+	"oauth-summary": "On this special page, do this simple thing and earn wonders.",
+	"group-oauthrole": "Role of myextension",
+	"group-oauthrole-member": "Member of role of myextension",
+	"grouppage-oauthrole": "{{ns:project}}:Role of myextension",
+	"action-oauth": "XYZ doing.",
+	"right-oauth": "to do xyz"
 }
