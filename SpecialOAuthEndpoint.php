@@ -6,6 +6,10 @@ require("config/config.php");
 
 class SpecialOAuthEndpoint extends SpecialPage {
 
+    public $accessToken;
+
+    public $instanceUrl;
+
     public function __construct() {
 
         parent::__construct("OAuthEndpoint");
@@ -22,12 +26,29 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         } else {
 
-            $credentials = $mgr->getAccessToken();
+            $accessToken = $mgr->requestAccessToken();
 
             unset($_GET["code"]);
 
-            var_dump($credentials, $_SESSION, $_GET);exit;
+            $sfUserInfo = $mgr->getUserInfo();
+
+            $newWikiUser = $this->getNewWikiUser($sfUserInfo);
+
+            var_dump($newWikiUser, $accessToken, $_SESSION);exit;
 		}
+    }
+
+
+    public function getNewWikiUser($userInfo) {
+
+        $firstName = $userInfo["given_name"];
+        $lastName = $userInfo["family_name"];
+        $email = $userInfo["email"];
+
+        $wikiUser = User::createNew("$firstName $lastName", array());
+        $wikiUser->setEmail($email);
+
+        return $wikiUser;
     }
 
 }

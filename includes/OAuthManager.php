@@ -5,12 +5,17 @@ namespace MediaWiki\Extension\OAuth;
 use \Salesforce\OAuthConfig;
 use \Salesforce\OAuth;
 use \Salesforce\OAuthRequest;
+use \Salesforce\RestApiRequest;
 
 class OAuthManager {
 
     public $config;
 
     public $flow;
+
+    public $accessToken;
+
+    public $instanceUrl;
 
     public function __construct(){
 
@@ -59,7 +64,7 @@ class OAuthManager {
         header("Location: $url");
     }
     
-    public function getAccessToken() {
+    public function requestAccessToken() {
     
         // Set the authorization code using the value in $_GET super
         $this->config->setAuthorizationCode($_GET["code"]);
@@ -71,9 +76,32 @@ class OAuthManager {
         $resp = $oauth->authorize();
     
         // The response contains the access token and instance url.
-        $token = $resp->getAccessToken();
-        $url = $resp->getInstanceUrl();
-    
-        return array("instance_url" => $url, "access_token" => $token);
+        $this->accessToken = $resp->getAccessToken();
+        $this->instanceUrl = $resp->getInstanceUrl();
+
+        return $this->accessToken;
     }
+
+
+    public function getInstanceUrl() {
+
+        return $this->instanceUrl;
+    }
+
+    public function getAccessToken() {
+
+        return $this->accessToken;
+    }
+
+
+    public function getUserInfo(){
+
+		$url = "/services/oauth2/userinfo?access_token={$this->accessToken}";
+
+		$req = new RestApiRequest($this->instanceUrl, $this->accessToken);
+
+		$resp = $req->send($url);
+		
+		return $resp->getBody();
+	}
 }
