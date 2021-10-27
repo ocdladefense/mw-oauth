@@ -1,12 +1,13 @@
 ﻿# wiki-extension-oauth
 
-### Create a new MediaWiki Extension.
-1. On GitHub, create a new MediaWiki extension repository, using the "wiki-extension-template" as a template. (https://github.com/ocdladefense/wiki-extension-template.git)
-2. Clone the new extension repository into your MediaWiki installation's "extensions" directory and rename it if needed.
-4. Update the extensions.json file.  Change all "BoilerPlate" references to your extensions name.
-5. Change the hook callback's conditional operator to "true || ..." so that the code executes regardless of whats in the config.
-6. Activate the new extension in your MediaWiki installation by adding "wfLoadExtension('ExtensionDirName')" to "LocalSettings.php".
-7. Refresh the page and you should see the text that you specified in the callback.
+### OAuth and Login Related Links.
+1. https://www.mediawiki.org/wiki/Extension:OAuth2_Client
+2. https://www.mediawiki.org/wiki/Extension:OAuth
+3. https://doc.wikimedia.org/mediawiki-core/master/php/classWebRequest.html#a2b571214e80e3998627ecb89cc0d9f56
+4. https://www.mediawiki.org/wiki/Manual:SessionManager_and_AuthManager
+5. https://doc.wikimedia.org/mediawiki-core/1.23.7/php/classOutputPage.html
+
+
 
 
 #### Features ???
@@ -20,3 +21,4 @@ To take advantage of this automation.
 4. `composer install`
 
 Once set up, running `npm test` and `composer test` will run automated code checks.
+ 
