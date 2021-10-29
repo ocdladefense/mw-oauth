@@ -11,12 +11,6 @@ class OAuthHooks{
         // Check to see if the route is protected 
         $route = $title->mTextform;
 
-        if($route == "Main Page"){
-
-            var_dump($user, $request);exit;
-
-        }
-
         if(self::isProtected($route)){
 
             $url = "$wgScriptPath/index.php/Special:OAuthEndpoint";
@@ -33,11 +27,21 @@ class OAuthHooks{
 
     public static function onPersonalUrls( array &$personal_urls, \Title $title, \SkinTemplate $skin ) {
 
-        global $wgScriptPath;
+        global $wgScriptPath, $wgRequest;
 
-		$personal_urls["login"]["text"] = "OCDLA login";
-		$personal_urls["login"]["href"] = "$wgScriptPath/index.php/Special:OAuthEndpoint";
-		$personal_urls["login"]["active"] = true;
+        $user = $wgRequest->getSession()->getUser();
+
+        if(self::isLoggedIn($user)){
+
+            unset($personal_urls["login"]);
+
+        } else {
+            
+            $personal_urls["login"]["text"] = "OCDLA login";
+            $personal_urls["login"]["href"] = "$wgScriptPath/index.php/Special:OAuthEndpoint";
+            $personal_urls["login"]["active"] = true;
+
+        }
 
 		return true;
 	}
@@ -49,9 +53,9 @@ class OAuthHooks{
     }
 
     
-    public static function userIsLoggedIn($userId) {
+    public static function isLoggedIn($user) {
 
-        return $userId != 0;
+        return $user->getId() != 0;
 
     }
 }
