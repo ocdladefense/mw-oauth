@@ -49,24 +49,26 @@ class SpecialOAuthEndpoint extends SpecialPage {
         
             $sfUserInfo = $this->getUserInfo($resp->getAccessToken(), $resp->getInstanceUrl());
 
-            // If there is an existing user for the given username (in the userinfo), use the existing user.  Otherwise create a new user and use the new user.
-            $currentUser = !$this->getExistingUser($sfUserInfo) ? $this->getNewWikiUser($sfUserInfo) : $this->getExistingUser($sfUserInfo);
-
-            // Setting the active user and saving it to the session.
-            $wgRequest->getSession()->persist();
+            $currentUser = $this->getCurrentUser($sfUserInfo);
 
             $currentUser->setCookies();
             $currentUser->saveSettings();
             $wgUser = $currentUser;
-    
-            $this->getContext()->setUser($currentUser);
     
             header("Location: $wgScriptPath/index.php/Main_Page");
 		}
     }
 
 
-    // Query the database for a user with given username.  If none are found, return false;
+    public function getCurrentUser($userInfo) {
+
+        $existingUser = $this->getExistingUser($userInfo);
+
+        return !$existingUser ? $this->getNewUser($userInfo) : $existingUser;
+    }
+
+
+    // Query the database for a user with given username and return an instance of "User".  If no rows are found, return false;
     public function getExistingUser($userInfo) {
 
         $username = $userInfo["preferred_username"];
@@ -77,7 +79,7 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         $res = $dbConnection->select("user", "user_id", "user_name LIKE '%$username%' LIMIT 1");
 
-        $object = $res->fetchObject(); // Returns false of there are no rows
+        $object = $res->fetchObject(); // Returns false if there are no rows
 
         if($object == false) return $object;
 
@@ -88,7 +90,7 @@ class SpecialOAuthEndpoint extends SpecialPage {
     }
 
 
-    public function getNewWikiUser($userInfo) {
+    public function getNewUser($userInfo) {
 
         $firstName = $userInfo["given_name"];
         $lastName = $userInfo["family_name"];
@@ -100,26 +102,10 @@ class SpecialOAuthEndpoint extends SpecialPage {
         if(empty($wikiUser)) throw new Exception("ERROR CREATING USER:  The user name '$username' was either invalid, or already in use.");
 
         $wikiUser->setEmail($email);
-        $wikiUser->load();  //  loads the user based on the user's "id" field.  Specified by the "mForm" property on the user object.
-
-        if(!($wikiUser instanceof User && $wikiUser->getId())) {
-
-			$user->addToDatabase();
-			$user->confirmEmail();
-		}
-
         $wikiUser->setToken();  // Set the random token (used for persistent authentication)
 
         return $wikiUser;
     }
-
-
-
-    public function userIsAuthorized(){
-    
-        return $_SESSION["authorized"] == True;
-    }
-
 
 
     public function getUserInfo($accessToken, $instanceUrl){
@@ -133,4 +119,9 @@ class SpecialOAuthEndpoint extends SpecialPage {
 		return $resp->getBody();
 	}
 
+
+    public function userIsAuthorized(){
+    
+        return $_SESSION["authorized"] == True;
+    }
 }

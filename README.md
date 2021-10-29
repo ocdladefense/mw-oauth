@@ -8,6 +8,7 @@
 4. https://www.mediawiki.org/wiki/Manual:SessionManager_and_AuthManager
 5. https://doc.wikimedia.org/mediawiki-core/1.23.7/php/classOutputPage.html
 6. https://www.mediawiki.org/wiki/Extension:PluggableAuths (Uses the "onBeforeInitialization", )
+7. https://www.mediawiki.org/wiki/Manual:Database_access
 
 
 
