@@ -1,4 +1,5 @@
-﻿# wiki-extension-oauth
+﻿
+# wiki-extension-oauth
 
 ### OAuth and Login Related Links.
 1. https://www.mediawiki.org/wiki/Extension:OAuth2_Client
@@ -6,6 +7,7 @@
 3. https://doc.wikimedia.org/mediawiki-core/master/php/classWebRequest.html#a2b571214e80e3998627ecb89cc0d9f56
 4. https://www.mediawiki.org/wiki/Manual:SessionManager_and_AuthManager
 5. https://doc.wikimedia.org/mediawiki-core/1.23.7/php/classOutputPage.html
+6. https://www.mediawiki.org/wiki/Extension:PluggableAuths (Uses the "onBeforeInitialization", )
 
 
 

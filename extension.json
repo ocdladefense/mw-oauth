@@ -14,41 +14,20 @@
 		"MediaWiki\\Extension\\OAuth\\": "includes/"
 	},
 	"AutoloadClasses":{
-		"SpecialOAuthEndpoint":"SpecialOAuthEndpoint.php"
-	},
-	"config": {
-		"OAuthTestConfigurationItem": {
-			"description": "This is a test.",
-			"value": "This is the test configuration"
-		}
-	},
-	"HookHandlers": {
-		"LinkHook": {
-			"class": "MediaWiki\\Extension\\OAuth\\HookAddLink"
-		}
-	},
-	"Hooks": {
-		"PersonalUrls": "LinkHook"
+		"SpecialOAuthEndpoint":"SpecialOAuthEndpoint.php",
+		"OAuthHooks": "includes/OAuthHooks.php"
 	},
 	"SpecialPages": {
 		"OAuthEndpoint": "SpecialOAuthEndpoint"
+	},
+	"Hooks": {
+		"PersonalUrls": "OAuthHooks::onPersonalUrls",
+		"BeforeInitialize": "OAuthHooks::onBeforeInitialize"
 	},
 	"MessagesDirs": {
 		"OAuth": [
 			"i18n"
 		]
-	},
-	"ResourceFileModulePaths": {
-		"localBasePath": "resources",
-		"remoteExtPath": "OAuth/resources"
-	},
-	"ResourceModules": {
-		"ext.oAuth": {
-			"dependencies": [],
-			"messages": [],
-			"styles": [],
-			"scripts": []
-		}
 	},
 	"manifest_version": 2
 }
