@@ -1,6 +1,7 @@
 <?php
 
 use \MediaWiki\MediaWikiServices;
+use \MediaWiki\User\UserFactory;
 use \Salesforce\OAuthConfig;
 use \Salesforce\OAuth;
 use \Salesforce\OAuthRequest;
@@ -48,30 +49,23 @@ class SpecialOAuthEndpoint extends SpecialPage {
             $resp = $oauth->authorize();
         
             $sfUserInfo = $this->getUserInfo($resp->getAccessToken(), $resp->getInstanceUrl());
+            $username = $sfUserInfo["preferred_username"];
+            $email = $sfUserInfo["email"];
 
-            $currentUser = $this->getCurrentUser($sfUserInfo);
+            $user = !$this->getExistingUser($username) ? $this->createUser($username, $email) : $this->getExistingUser($username);
 
-            $currentUser->setCookies();
-            $currentUser->saveSettings();
-            $wgUser = $currentUser;
+            $user->setCookies();
+            $user->saveSettings();
+            $wgUser = $user;
     
             header("Location: $wgScriptPath/index.php/Main_Page");
 		}
     }
 
 
-    public function getCurrentUser($userInfo) {
-
-        $existingUser = $this->getExistingUser($userInfo);
-
-        return !$existingUser ? $this->getNewUser($userInfo) : $existingUser;
-    }
-
 
     // Query the database for a user with given username and return an instance of "User".  If no rows are found, return false;
-    public function getExistingUser($userInfo) {
-
-        $username = $userInfo["preferred_username"];
+    public function getExistingUser($username) {
 
         $loadBalancer = MediaWikiServices::getInstance()->getDBLoadBalancer();
 
@@ -79,28 +73,24 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         $res = $dbConnection->select("user", "user_id", "user_name LIKE '%$username%' LIMIT 1");
 
-        $object = $res->fetchObject(); // Returns false if there are no rows
+        $object = $res->fetchObject(); // Returns standard class or false if there are no rows.
 
         if($object == false) return $object;
 
         $user = User::newFromId($object->user_id);
-        $user->load();  // load new user object with field data from database.
+        $user->load();  // load new user object with field data from database. (also called by "setCookies")
 
         return $user;
     }
 
 
-    public function getNewUser($userInfo) {
-
-        $firstName = $userInfo["given_name"];
-        $lastName = $userInfo["family_name"];
-        $username = $userInfo["preferred_username"];
-        $email = $userInfo["email"];
+    public function createUser($username, $email) {
 
         $wikiUser = User::createNew($username, array()); // Add the user to the database and return user object.
 
         if(empty($wikiUser)) throw new Exception("ERROR CREATING USER:  The user name '$username' was either invalid, or already in use.");
 
+        $wikiUser->setRealName($username);
         $wikiUser->setEmail($email);
         $wikiUser->setToken();  // Set the random token (used for persistent authentication)
 
