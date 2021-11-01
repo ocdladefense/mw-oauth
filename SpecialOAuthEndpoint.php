@@ -71,11 +71,14 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         $dbConnection = $loadBalancer->getConnection(DB_REPLICA);
 
-        $res = $dbConnection->select("user", "user_id", "user_name LIKE '%$username%' LIMIT 1");
+        $res = $dbConnection->select("user", "user_id", "user_name LIKE '%$username%'");
 
         $object = $res->fetchObject(); // Returns standard class or false if there are no rows.
 
         if($object == false) return $object;
+
+        // $factory = MediaWikiServices::getInstance()->getUserFactory();
+        // $user = $factory->newFromName($username);
 
         $user = User::newFromId($object->user_id);
         $user->load();  // load new user object with field data from database. (also called by "setCookies")
