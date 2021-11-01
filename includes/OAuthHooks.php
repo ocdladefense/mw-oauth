@@ -25,6 +25,7 @@ class OAuthHooks{
         }
     }
 
+    
     public static function onPersonalUrls( array &$personal_urls, \Title $title, \SkinTemplate $skin ) {
 
         global $wgScriptPath, $wgRequest;
