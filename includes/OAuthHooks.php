@@ -2,22 +2,28 @@
 
 class OAuthHooks{
 
-    public static $protected = array("Baz", "Foo");
+    public static $protected = array("Protected", "Test");
 
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
         global $wgScriptPath;
 
-        // Check to see if the route is protected 
-        $route = $title->mTextform;
+        $route = $output->getTitle()->mUrlform;
 
-        if(self::isProtected($route)){
+        if(self::isProtected($route) && !self::isLoggedIn($user)){
+
+            $request->getSession()->persist();
+            $request->setSessionData("protected_redirect", $route);
 
             $url = "$wgScriptPath/index.php/Special:OAuthEndpoint";
-
             header("Location: $url");
 
             exit;
+
+        } else if($route == "UserLogout") {
+
+            $url = "$wgScriptPath/index.php/Main_Page";
+            header("Location: $url");
 
         } else {
 
@@ -25,7 +31,7 @@ class OAuthHooks{
         }
     }
 
-    
+
     public static function onPersonalUrls( array &$personal_urls, \Title $title, \SkinTemplate $skin ) {
 
         global $wgScriptPath, $wgRequest;

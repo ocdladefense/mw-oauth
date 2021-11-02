@@ -24,7 +24,9 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         $config = new OAuthConfig($oauth_config);
 
-        if(empty($_GET["code"])) {
+        $credentialsAccepted = empty($_GET["code"]);
+
+        if(!$credentialsAccepted) {
 
             $_SESSION["redirect"] = $_SERVER["PHP_SELF"];
     
@@ -68,8 +70,11 @@ class SpecialOAuthEndpoint extends SpecialPage {
             $user->setCookies();
             $user->saveSettings();
             $wgUser = $user;
+
+            $protectedRedirect = $wgRequest->getSessionData("protected_redirect");
+            $actualRedirect = !empty($protectedRedirect) ? $protectedRedirect : "Main_Page";
     
-            header("Location: $wgScriptPath/index.php/Main_Page");
+            header("Location: $wgScriptPath/index.php/$actualRedirect");
 		}
     }
 
