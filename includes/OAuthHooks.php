@@ -13,7 +13,7 @@ class OAuthHooks{
         if(self::isProtected($route) && !self::isLoggedIn($user)){
 
             $request->getSession()->persist();
-            $request->setSessionData("protected_redirect", $route);
+            $request->setSessionData("redirect", $route);
 
             $url = "$wgScriptPath/index.php/Special:OAuthEndpoint";
             header("Location: $url");

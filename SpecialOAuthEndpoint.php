@@ -27,18 +27,13 @@ class SpecialOAuthEndpoint extends SpecialPage {
         $credentialsAccepted = !empty($_GET["code"]);
 
         if(!$credentialsAccepted) {
-
-            $wgRequest->setSessionData("redirect", $_SERVER["PHP_SELF"]);
-    
-            if(!$this->userIsAuthorized()){
         
-                $response = OAuth::newOAuthResponse($config, "webserver");
+            $response = OAuth::newOAuthResponse($config, "webserver");
 
-                $url = $response->getHeader("Location")->getValue();
+            $url = $response->getHeader("Location")->getValue();
 
-                // Redirect to the salesforce login page.
-                header("Location: $url");
-            }
+            // Redirect to the salesforce login page.
+            header("Location: $url");
 
         } else {
 
@@ -71,10 +66,10 @@ class SpecialOAuthEndpoint extends SpecialPage {
             $user->saveSettings();
             $wgUser = $user;
 
-            $protectedRedirect = $wgRequest->getSessionData("protected_redirect");
-            $actualRedirect = !empty($protectedRedirect) ? $protectedRedirect : "Main_Page";
+            $protectedRedirect = $wgRequest->getSessionData("redirect");
+            $redirect = !empty($protectedRedirect) ? $protectedRedirect : "Main_Page";
     
-            header("Location: $wgScriptPath/index.php/$actualRedirect");
+            header("Location: $wgScriptPath/index.php/$redirect");
 		}
     }
 
@@ -90,10 +85,4 @@ class SpecialOAuthEndpoint extends SpecialPage {
 		
 		return $resp->getBody();
 	}
-
-
-    public function userIsAuthorized(){
-    
-        return $_SESSION["authorized"] == True;
-    }
 }
