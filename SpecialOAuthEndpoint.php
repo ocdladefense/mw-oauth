@@ -24,7 +24,7 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         $config = new OAuthConfig($oauth_config);
 
-        $credentialsAccepted = empty($_GET["code"]);
+        $credentialsAccepted = !empty($_GET["code"]);
 
         if(!$credentialsAccepted) {
 
