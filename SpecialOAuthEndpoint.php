@@ -28,7 +28,7 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         if(!$credentialsAccepted) {
 
-            $_SESSION["redirect"] = $_SERVER["PHP_SELF"];
+            $wgRequest->setSessionData("redirect", $_SERVER["PHP_SELF"]);
     
             if(!$this->userIsAuthorized()){
         
