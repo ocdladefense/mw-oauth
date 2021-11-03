@@ -12,8 +12,6 @@ class OAuthHooks{
 
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
-        // var_dump($title->mUrlform, self::$userLogout);exit;
-
         if($title->mUrlform == self::$userLogout) {
 
             $url = self::getLogoutRedirect();
