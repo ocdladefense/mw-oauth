@@ -2,37 +2,32 @@
 
 class OAuthHooks{
 
-    public static $protected = array("Protected", "Test");
+    private static $protected = array("Protected", "Test");
 
-    public static $oauthEndpoint = "Special:OAuthEndpoint";
-
-    public static $userLogout = "UserLogout";
-
-    public static $logoutRedirect = "Main_Page";
+    private static $oauthEndpoint = "Special:OAuthEndpoint";
 
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
-        if($title->mUrlform == self::$userLogout) {
+        $redirectUrl;
 
-            $url = self::getLogoutRedirect();
-            header("Location: $url");
-
-            exit;
-
-        }else if(self::isPublic($title)){
-
-            return;
-
-        } else if(!self::hasAccess($title, $user)){
+        if(self::isPublic($title)) return;
+        
+        if(!self::hasAccess($title, $user)){
 
             $request->getSession()->persist();
             $request->setSessionData("redirect", $title->mUrlform);
 
-            $url = self::getOAuthEndpoint();
-            header("Location: $url");
+            $redirectUrl = self::getOAuthEndpoint();
+
+            header("Location: $redirectUrl");
 
             exit;
         }
+    }
+
+    public static function isLogOut($title) {
+
+        return $title->mUrlform == self::$userLogout;
     }
 
 
@@ -94,4 +89,19 @@ class OAuthHooks{
 
 		return true;
 	}
+
+    public static function onBeforePageDisplay(\OutputPage $out, \Skin $skin) {
+
+        $userLogout = "UserLogout";
+
+        $logoutRedirect = "Main_Page";
+
+
+        if(self::isLogOut($out->getTitle())) {
+
+            $redirectUrl = self::getLogoutRedirect();
+
+        }
+
+    }
 }

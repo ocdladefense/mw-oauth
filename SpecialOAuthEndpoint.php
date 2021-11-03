@@ -31,11 +31,11 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     public function execute($parameter) {
 
-        global $oauth_config;
+        global $oauth_config, $wgRequest;
 
         $config = new OAuthConfig($oauth_config);
 
-        if($this->authorizationCodeGranted()) $config->setAuthorizationCode($_GET["code"]);
+        if($this->authorizationCodeGranted()) $config->setAuthorizationCode($wgRequest->getVal("code"));
 
         if($this->shouldRedirectToIdentityProvider()) {
         
