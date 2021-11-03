@@ -24,6 +24,9 @@
 		"PersonalUrls": "OAuthHooks::onPersonalUrls",
 		"BeforeInitialize": "OAuthHooks::onBeforeInitialize"
 	},
+	"ExtensionMessagesFiles": {
+		"OAuthConfig": "config/config.php"
+	},
 	"MessagesDirs": {
 		"OAuth": [
 			"i18n"

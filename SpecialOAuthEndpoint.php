@@ -12,9 +12,59 @@ require("config/config.php");
 
 class SpecialOAuthEndpoint extends SpecialPage {
 
+    private $defaultRedirect = "Main_Page";
+
+    private $userInfoEndpoint = "/services/oauth2/userinfo?access_token=";
+
     public function __construct() {
 
         parent::__construct("OAuthEndpoint");
+    }
+
+
+    public function execute($parameter) {
+
+        global $oauth_config;
+
+        $config = new OAuthConfig($oauth_config);
+
+        if($parameter == "login"){
+
+            $response = OAuth::newOAuthResponse($config, "webserver");
+
+            $loginUrl = $response->getHeader("Location")->getValue();
+
+            header("Location: $loginUrl");
+
+            exit;
+        }
+
+
+        if($this->authorizationCodeGranted()) {
+
+            $config->setAuthorizationCode($this->getRequest()->getVal("code"));
+
+        } else {
+
+            throw new Exception("OAUTH_ERROR: No authorization code granted");
+        }
+
+        // Build the request and send the authorization code returned in the previous step.
+        $oauth = OAuthRequest::newAccessTokenRequest($config, "webserver");
+
+        $resp = $oauth->authorize();
+    
+        $sfUserInfo = $this->getUserInfo($resp->getAccessToken(), $resp->getInstanceUrl());
+        $username = $this->formatMWUsername($sfUserInfo["preferred_username"]);
+        $email = $sfUserInfo["email"];
+
+        $user = !$this->userExists($username) ? $this->createUser($username, $email) : $this->loadUser($username);
+
+        $this->logUserIn($user);
+
+        $url = $this->getRedirect();
+
+        header("Location: $url");
     }
 
 
@@ -29,44 +79,6 @@ class SpecialOAuthEndpoint extends SpecialPage {
     }
 
 
-    public function execute($parameter) {
-
-        global $oauth_config, $wgRequest;
-
-        $config = new OAuthConfig($oauth_config);
-
-        if($this->authorizationCodeGranted()) $config->setAuthorizationCode($wgRequest->getVal("code"));
-
-        if($this->shouldRedirectToIdentityProvider()) {
-        
-            $response = OAuth::newOAuthResponse($config, "webserver");
-
-            $url = $response->getHeader("Location")->getValue();
-
-            // Redirect to the salesforce login page.
-            header("Location: $url");
-
-        } else if($this->authorizationCodeGranted()){
-        
-            // Build the request and send the authorization code returned in the previous step.
-            $oauth = OAuthRequest::newAccessTokenRequest($config, "webserver");
-        
-            $resp = $oauth->authorize();
-        
-            $sfUserInfo = $this->getUserInfo($resp->getAccessToken(), $resp->getInstanceUrl());
-            $username = $this->formatMWUsername($sfUserInfo["preferred_username"]);
-            $email = $sfUserInfo["email"];
-
-            $user = !$this->userExists($username) ? $this->createUser($username, $email) : $this->loadUser($username);
-
-            $this->logUserIn($user);
-
-            $url = $this->getRedirect();
-    
-            header("Location: $url");
-		}
-    }
-
     public function formatMWUsername($username) {
 
         return ucfirst($username);
@@ -75,11 +87,11 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     public function getRedirect() {
 
-        global $wgRequest, $wgScriptPath;
+        global $wgScriptPath;
 
-        $sessionRedirect = $wgRequest->getSessionData("redirect");
+        $sessionRedirect = $this->getRequest()->getSessionData("redirect");
 
-        $redirect = !empty($sessionRedirect) ? $sessionRedirect : "Main_Page";
+        $redirect = !empty($sessionRedirect) ? $sessionRedirect : $this->defaultRedirect;
 
         return "$wgScriptPath/index.php/$redirect";
     }
@@ -125,11 +137,9 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     public function getUserInfo($accessToken, $instanceUrl){
 
-		$url = "/services/oauth2/userinfo?access_token={$accessToken}";
-
 		$req = new RestApiRequest($instanceUrl, $accessToken);
 
-		$resp = $req->send($url);
+		$resp = $req->send($this->userInfoEndpoint . $accessToken);
 		
 		return $resp->getBody();
 	}

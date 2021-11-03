@@ -1,25 +1,31 @@
 <?php 
 
-class OAuthHooks{
+use Salesforce\OAuth;
+use Salesforce\OAuthConfig;
+
+
+class OAuthHooks {
+
 
     private static $protected = array("Protected", "Test");
 
     private static $oauthEndpoint = "Special:OAuthEndpoint";
 
+    private static $loginUrl = "Special:OAuthEndpoint/login";
+
+
+
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
-        $redirectUrl;
 
         if(self::isPublic($title)) return;
         
         if(!self::hasAccess($title, $user)){
-
+            
             $request->getSession()->persist();
             $request->setSessionData("redirect", $title->mUrlform);
 
-            $redirectUrl = self::getOAuthEndpoint();
-
-            header("Location: $redirectUrl");
+            header("Location: " . self::getLoginUrl());
 
             exit;
         }
@@ -36,6 +42,13 @@ class OAuthHooks{
         global $wgScriptPath;
 
         return "$wgScriptPath/index.php/" . self::$oauthEndpoint;
+    }
+
+    public static function getLoginUrl(){
+
+        global $wgScriptPath;
+
+        return "$wgScriptPath/index.php/" . self::$loginUrl;
     }
 
     public static function getLogoutRedirect(){
@@ -82,7 +95,7 @@ class OAuthHooks{
         } else {
             
             $personal_urls["login"]["text"] = "OCDLA login";
-            $personal_urls["login"]["href"] = "$wgScriptPath/index.php/Special:OAuthEndpoint";
+            $personal_urls["login"]["href"] = "$wgScriptPath/index.php/" . self::$loginUrl;
             $personal_urls["login"]["active"] = true;
 
         }
