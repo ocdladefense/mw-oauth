@@ -117,7 +117,6 @@ class SpecialOAuthEndpoint extends SpecialPage {
     public function logUserIn($user){
 
         global $wgUser;
-
         $user->setCookies();
         $user->saveSettings();
         $wgUser = $user;
