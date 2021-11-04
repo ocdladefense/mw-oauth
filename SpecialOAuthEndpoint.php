@@ -17,7 +17,7 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         parent::__construct("OAuthEndpoint");
 
-        Autoloader::load();
+        OAuthAutoloader::load();
     }
 
 

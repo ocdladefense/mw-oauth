@@ -16,7 +16,7 @@
 	"AutoloadClasses":{
 		"SpecialOAuthEndpoint":"SpecialOAuthEndpoint.php",
 		"OAuthHooks": "includes/OAuthHooks.php",
-		"Autoloader": "includes/Autoloader.php"
+		"OAuthAutoloader": "includes/OAuthAutoloader.php"
 	},
 	"SpecialPages": {
 		"OAuthEndpoint": "SpecialOAuthEndpoint"

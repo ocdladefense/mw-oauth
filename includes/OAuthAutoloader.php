@@ -1,6 +1,6 @@
 <?php
 
-class Autoloader {
+class OAuthAutoloader {
 
     public static function load(){
 
