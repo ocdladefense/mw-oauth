@@ -15,7 +15,8 @@
 	},
 	"AutoloadClasses":{
 		"SpecialOAuthEndpoint":"SpecialOAuthEndpoint.php",
-		"OAuthHooks": "includes/OAuthHooks.php"
+		"OAuthHooks": "includes/OAuthHooks.php",
+		"Autoloader": "includes/Autoloader.php"
 	},
 	"SpecialPages": {
 		"OAuthEndpoint": "SpecialOAuthEndpoint"
@@ -23,9 +24,6 @@
 	"Hooks": {
 		"PersonalUrls": "OAuthHooks::onPersonalUrls",
 		"BeforeInitialize": "OAuthHooks::onBeforeInitialize"
-	},
-	"ExtensionMessagesFiles": {
-		"OAuthConfig": "config/config.php"
 	},
 	"MessagesDirs": {
 		"OAuth": [

@@ -7,9 +7,6 @@ use \Salesforce\OAuth;
 use \Salesforce\OAuthRequest;
 use \Salesforce\RestApiRequest;
 
-
-require("config/config.php");
-
 class SpecialOAuthEndpoint extends SpecialPage {
 
     private $defaultRedirect = "Main_Page";
@@ -19,6 +16,8 @@ class SpecialOAuthEndpoint extends SpecialPage {
     public function __construct() {
 
         parent::__construct("OAuthEndpoint");
+
+        Autoloader::load();
     }
 
 
