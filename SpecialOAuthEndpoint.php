@@ -9,6 +9,8 @@ use \Salesforce\RestApiRequest;
 
 class SpecialOAuthEndpoint extends SpecialPage {
 
+    private $oauthFlow = "webserver";
+
     private $defaultRedirect = "Main_Page";
 
     private $userInfoEndpoint = "/services/oauth2/userinfo?access_token=";
@@ -29,7 +31,7 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         if($parameter == "login"){
 
-            $response = OAuth::newOAuthResponse($config, "webserver");
+            $response = OAuth::newOAuthResponse($config, $this->oauthFlow);
 
             $loginUrl = $response->getHeader("Location")->getValue();
 
@@ -49,7 +51,7 @@ class SpecialOAuthEndpoint extends SpecialPage {
         }
 
         // Build the request and send the authorization code returned in the previous step.
-        $oauth = OAuthRequest::newAccessTokenRequest($config, "webserver");
+        $oauth = OAuthRequest::newAccessTokenRequest($config, $this->oauthFlow);
 
         $resp = $oauth->authorize();
     
