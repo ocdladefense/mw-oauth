@@ -1,8 +1,5 @@
 <?php 
 
-use Salesforce\OAuth;
-use Salesforce\OAuthConfig;
-
 
 class OAuthHooks {
 
@@ -29,24 +26,12 @@ class OAuthHooks {
         }
     }
 
-    public static function isLogOut($title) {
-
-        return $title->mUrlform == self::$userLogout;
-    }
-
 
     public static function getLoginUrl(){
 
         global $wgScriptPath;
 
         return "$wgScriptPath/index.php/" . self::$loginUrl;
-    }
-
-    public static function getLogoutRedirect(){
-
-        global $wgScriptPath;
-
-        return "$wgScriptPath/index.php/" . self::$logoutRedirect;
     }
 
     public static function isProtected($title) {
@@ -94,18 +79,5 @@ class OAuthHooks {
 		return true;
 	}
 
-    public static function onBeforePageDisplay(\OutputPage $out, \Skin $skin) {
-
-        $userLogout = "UserLogout";
-
-        $logoutRedirect = "Main_Page";
-
-
-        if(self::isLogOut($out->getTitle())) {
-
-            $redirectUrl = self::getLogoutRedirect();
-
-        }
-
-    }
+    public static function onBeforePageDisplay(\OutputPage $out, \Skin $skin) {}
 }
