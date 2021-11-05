@@ -9,8 +9,6 @@ class OAuthHooks {
 
     private static $protected = array("Protected", "Test");
 
-    private static $oauthEndpoint = "Special:OAuthEndpoint";
-
     private static $loginUrl = "Special:OAuthEndpoint/login";
 
 
@@ -36,13 +34,6 @@ class OAuthHooks {
         return $title->mUrlform == self::$userLogout;
     }
 
-
-    public static function getOAuthEndpoint(){
-
-        global $wgScriptPath;
-
-        return "$wgScriptPath/index.php/" . self::$oauthEndpoint;
-    }
 
     public static function getLoginUrl(){
 
