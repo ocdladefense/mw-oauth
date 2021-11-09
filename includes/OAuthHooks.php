@@ -12,26 +12,26 @@ class OAuthHooks {
 
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
+	OAuthAutoloader::load();
 
-        if(self::isPublic($title)) return;
+        if(self::isPublic($title)) return true;
         
         if(!self::hasAccess($title, $user)){
             
-            $request->getSession()->persist();
-            $request->setSessionData("redirect", $title->mUrlform);
+            //$request->getSession()->persist();
+            //$request->setSessionData("redirect", $title->mUrlform);
+	    $_SESSION["redirect"] = $title->mUrlform;
 
             header("Location: " . self::getLoginUrl());
 
-            exit;
+            return true;
         }
     }
 
 
     public static function getLoginUrl(){
 
-        global $wgScriptPath;
-
-        return "$wgScriptPath/index.php/" . self::$loginUrl;
+        return "/index.php/" . self::$loginUrl;
     }
 
     public static function isProtected($title) {
@@ -58,23 +58,23 @@ class OAuthHooks {
     }
 
 
-    public static function onPersonalUrls( array &$personal_urls, \Title $title, \SkinTemplate $skin ) {
+    public static function onPersonalUrls( array &$personal_urls, \Title $title ) {
 
-        global $wgScriptPath, $wgRequest;
+        //global $wgScriptPath, $wgRequest;
 
-        $user = $wgRequest->getSession()->getUser();
+        //$user = $wgRequest->getSession()->getUser();
 
-        if(self::isLoggedIn($user)){
+        //if(self::isLoggedIn($user)){
 
-            unset($personal_urls["login"]);
+           // unset($personal_urls["login"]);
 
-        } else {
+        //} else {
             
             $personal_urls["login"]["text"] = "OCDLA login";
             $personal_urls["login"]["href"] = "$wgScriptPath/index.php/" . self::$loginUrl;
             $personal_urls["login"]["active"] = true;
 
-        }
+        //}
 
 		return true;
 	}
