@@ -19,6 +19,9 @@ $wgExtensionCredits['specialpage'][] = array(
 	'descriptionmsg' => 'oauth-desc',
 	'version' => '2.0.2',
 );
+
+// White list the special page, so it is public.
+$wgWhitelistRead[] = "Special:OAuthEndpoint";
  
 
 # Location of the SpecialMyExtension class (Tell MediaWiki to load this file)
