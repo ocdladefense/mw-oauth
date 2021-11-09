@@ -1,5 +1,5 @@
 {
-	"name": "ocdladefense/wiki-extension-oauth",
+	"name": "ocdladefense/mw-oauth",
     "description": "A mediawiki extension for OAuth.",
     "type": "wordpress-theme",
 	"require-dev": {
