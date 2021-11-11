@@ -7,6 +7,7 @@ use \Salesforce\OAuth;
 use \Salesforce\OAuthRequest;
 use \Salesforce\RestApiRequest;
 
+
 class SpecialOAuthEndpoint extends SpecialPage {
 
     private $oauthFlow = "webserver";
@@ -18,8 +19,6 @@ class SpecialOAuthEndpoint extends SpecialPage {
     public function __construct() {
 
         parent::__construct("OAuthEndpoint");
-
-        OAuthAutoloader::load();
     }
 
 

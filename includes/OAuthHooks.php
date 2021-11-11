@@ -12,8 +12,6 @@ class OAuthHooks {
 
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
-	OAuthAutoloader::load();
-
         if(self::isPublic($title)) return true;
         
         if(!self::hasAccess($title, $user)){
