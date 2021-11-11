@@ -8,10 +8,14 @@ class OAuthHooks {
 
     private static $loginUrl = "Special:OAuthEndpoint/login";
 
+    private static $specialPage = "Special:OAuthEndpoint";
+
 
 
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
+        global $wgWhitelistRead;
+        $wgWhitelistRead[] = self::$specialPage;
 
         if(self::isPublic($title)) return;
         
@@ -80,4 +84,6 @@ class OAuthHooks {
 	}
 
     public static function onBeforePageDisplay(\OutputPage $out, \Skin $skin) {}
+
+    public static function onUserGetRights(\User $user, array &$aRights){}
 }
