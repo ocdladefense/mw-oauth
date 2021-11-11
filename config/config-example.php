@@ -1,5 +1,9 @@
 <?php
 
+if(!defined("BASE_PATH")) define("BASE_PATH", __DIR__ . "/..");
+
+error_reporting(E_ALL & ~E_NOTICE);
+
 $oauth_config = array(
     "name"    => "",
     "default" => true,
