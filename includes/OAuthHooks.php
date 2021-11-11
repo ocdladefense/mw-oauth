@@ -1,22 +1,21 @@
 <?php 
 
-use Salesforce\OAuth;
-use Salesforce\OAuthConfig;
-
 
 class OAuthHooks {
 
 
     private static $protected = array("Protected", "Test");
 
-    private static $oauthEndpoint = "Special:OAuthEndpoint";
-
     private static $loginUrl = "Special:OAuthEndpoint/login";
+
+    private static $specialPage = "Special:OAuthEndpoint";
 
 
 
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
+        global $wgWhitelistRead;
+        $wgWhitelistRead[] = self::$specialPage;
 
         if(self::isPublic($title)) return;
         
@@ -31,31 +30,12 @@ class OAuthHooks {
         }
     }
 
-    public static function isLogOut($title) {
-
-        return $title->mUrlform == self::$userLogout;
-    }
-
-
-    public static function getOAuthEndpoint(){
-
-        global $wgScriptPath;
-
-        return "$wgScriptPath/index.php/" . self::$oauthEndpoint;
-    }
 
     public static function getLoginUrl(){
 
         global $wgScriptPath;
 
         return "$wgScriptPath/index.php/" . self::$loginUrl;
-    }
-
-    public static function getLogoutRedirect(){
-
-        global $wgScriptPath;
-
-        return "$wgScriptPath/index.php/" . self::$logoutRedirect;
     }
 
     public static function isProtected($title) {
@@ -103,18 +83,7 @@ class OAuthHooks {
 		return true;
 	}
 
-    public static function onBeforePageDisplay(\OutputPage $out, \Skin $skin) {
+    public static function onBeforePageDisplay(\OutputPage $out, \Skin $skin) {}
 
-        $userLogout = "UserLogout";
-
-        $logoutRedirect = "Main_Page";
-
-
-        if(self::isLogOut($out->getTitle())) {
-
-            $redirectUrl = self::getLogoutRedirect();
-
-        }
-
-    }
+    public static function onUserGetRights(\User $user, array &$aRights){}
 }

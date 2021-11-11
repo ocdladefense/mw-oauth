@@ -23,7 +23,8 @@
 	},
 	"Hooks": {
 		"PersonalUrls": "OAuthHooks::onPersonalUrls",
-		"BeforeInitialize": "OAuthHooks::onBeforeInitialize"
+		"BeforeInitialize": "OAuthHooks::onBeforeInitialize",
+		"UserGetRights":"OAuthHooks::onUserGetRights"
 	},
 	"MessagesDirs": {
 		"OAuth": [
