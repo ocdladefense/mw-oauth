@@ -99,8 +99,8 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     public function userExists($username) {
 
-        $userFactory = MediaWikiServices::getInstance()->getUserFactory();
-        $user = $userFactory->newFromName($username);
+        //$userFactory = MediaWikiServices::getInstance()->getUserFactory();
+        $user = User::newFromName($username); //$userFactory->newFromName($username);
         $user->load();
 
         return $user->getId() != 0;
@@ -109,9 +109,9 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     public function loadUser($username){
 
-        $userFactory = MediaWikiServices::getInstance()->getUserFactory();
+        //$userFactory = MediaWikiServices::getInstance()->getUserFactory();
         
-        return $userFactory->newFromName($username);
+        return User::newFromName($username);
     }
 
 

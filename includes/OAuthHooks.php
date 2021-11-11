@@ -58,24 +58,22 @@ class OAuthHooks {
 
     public static function onPersonalUrls( array &$personal_urls, \Title $title ) {
 
-        //global $wgScriptPath, $wgRequest;
+        global $wgScriptPath, $wgUser;
 
-        //$user = $wgRequest->getSession()->getUser();
+        if(self::isLoggedIn($wgUser)){
 
-        //if(self::isLoggedIn($user)){
+           unset($personal_urls["login"]);
 
-           // unset($personal_urls["login"]);
-
-        //} else {
+        } else {
             
             $personal_urls["login"]["text"] = "OCDLA login";
             $personal_urls["login"]["href"] = "$wgScriptPath/index.php/" . self::$loginUrl;
             $personal_urls["login"]["active"] = true;
 
-        //}
+        }
 
 		return true;
-	}
+    }
 
     public static function onBeforePageDisplay(\OutputPage $out, \Skin $skin) {}
 }
