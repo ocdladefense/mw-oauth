@@ -4,7 +4,7 @@ class OAuthAutoloader {
 
     public static function load(){
 
-        require(__DIR__ . "/../config/config.php");
+        //require(__DIR__ . "/../config/config.php");
         
     }
 }
