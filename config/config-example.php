@@ -1,8 +1,7 @@
 <?php
 
-if(!defined("BASE_PATH")) define("BASE_PATH", __DIR__ . "/..");
-
-error_reporting(E_ALL & ~E_NOTICE);
+# This is an example of the identity provider's connected app configuration.
+# The "oauth_config" needs to be filled out and added to "LocalSettings.php"
 
 $oauth_config = array(
     "name"    => "",

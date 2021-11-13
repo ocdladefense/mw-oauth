@@ -64,7 +64,9 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         $url = $this->getRedirect();
 
-        header("Location: $url");
+	session_write_close();
+	
+        //header("Location: $url");
     }
 
 
@@ -99,8 +101,7 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     public function userExists($username) {
 
-        //$userFactory = MediaWikiServices::getInstance()->getUserFactory();
-        $user = User::newFromName($username); //$userFactory->newFromName($username);
+        $user = User::newFromName($username);
         $user->load();
 
         return $user->getId() != 0;
@@ -108,8 +109,6 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
 
     public function loadUser($username){
-
-        //$userFactory = MediaWikiServices::getInstance()->getUserFactory();
         
         return User::newFromName($username);
     }
@@ -137,10 +136,10 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     public function getUserInfo($accessToken, $instanceUrl){
 
-		$req = new RestApiRequest($instanceUrl, $accessToken);
+	$req = new RestApiRequest($instanceUrl, $accessToken);
 
-		$resp = $req->send($this->userInfoEndpoint . $accessToken);
+	$resp = $req->send($this->userInfoEndpoint . $accessToken);
 		
-		return $resp->getBody();
-	}
+	return $resp->getBody();
+    }
 }

@@ -11,7 +11,6 @@ EOT;
 	exit( 1 );
 }
 
-require(__DIR__ . "/config/config.php");
 
  
 $wgExtensionCredits['specialpage'][] = array(
@@ -24,13 +23,12 @@ $wgExtensionCredits['specialpage'][] = array(
 );
 
 // White list the special page, so it is public.
-$wgWhitelistRead[] = "Special:OAuthEndpoint";
- 
+$wgWhitelistRead[] = "Special:OAuthEndpoint"; 
+$wgWhitelistRead[] = "Special:OAuthEndpoint/login"; 
 
 # Location of the SpecialMyExtension class (Tell MediaWiki to load this file)
 $wgAutoloadClasses['SpecialOAuthEndpoint'] = __DIR__ . '/SpecialOAuthEndpoint.php';
 $wgAutoloadClasses['OAuthHooks'] = __DIR__ . '/includes/OAuthHooks.php';
-//$wgAutoloadClasses['OAuthAutoloader'] = __DIR__ . '/includes/OAuthAutoloader.php';
 
 $wgHooks['PersonalUrls'][] = 'OAuthHooks::onPersonalUrls';
 $wgHooks['BeforeInitialize'][] = 'OAuthHooks::onBeforeInitialize';
