@@ -24,7 +24,9 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     public function execute($parameter) {
 
-        global $oauth_config;
+	if(session_id() == '') wfSetupSession();
+        
+	global $oauth_config;
 
         $config = new OAuthConfig($oauth_config);
 
@@ -53,20 +55,29 @@ class SpecialOAuthEndpoint extends SpecialPage {
         $oauth = OAuthRequest::newAccessTokenRequest($config, $this->oauthFlow);
 
         $resp = $oauth->authorize();
+
+	$_SESSION["access-token"] = $resp->getAccessToken();
+	$_SESSION["instance-url"] = $resp->getInstanceUrl();
     
         $sfUserInfo = $this->getUserInfo($resp->getAccessToken(), $resp->getInstanceUrl());
+
+	$contactId = $this->getContactId($resp->getInstanceUrl(), $resp->getAccessToken(), $sfUserInfo["user_id"]);
+
+	$_SESSION["sf-contact-id"] = $contactId;
+
+
         $username = $this->formatMWUsername($sfUserInfo["preferred_username"]);
         $email = $sfUserInfo["email"];
 
         $user = !$this->userExists($username) ? $this->createUser($username, $email) : $this->loadUser($username);
 
-        $this->logUserIn($user);
+	$this->getContext()->setUser($user);
+
+        $this->logUserIn();
 
         $url = $this->getRedirect();
 
-	session_write_close();
-	
-        //header("Location: $url");
+        header("Location: $url");
     }
 
 
@@ -91,7 +102,7 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         global $wgScriptPath;
 
-        $sessionRedirect = $this->getRequest()->getSessionData("redirect");
+        $sessionRedirect = $_SESSION["redirect"];
 
         $redirect = !empty($sessionRedirect) ? $sessionRedirect : $this->defaultRedirect;
 
@@ -116,30 +127,41 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     public function createUser($username, $email) {
 
-        $user = User::createNew($username, array()); // Add the user to the database and return user object.
+        $user = User::createNew($username, array());
         $user->setRealName($username);
         $user->setEmail($email);
-        $user->setToken();  // Set the random token (used for persistent authentication)
+        $user->setToken();
 
         return $user;
     }
 
 
-    public function logUserIn($user){
+    public function logUserIn(){
 
         global $wgUser;
+
+	$user = $this->getUser();
         $user->setCookies();
         $user->saveSettings();
         $wgUser = $user;
     }
 
+    public function getContactId($instanceUrl, $accessToken, $userId){
+    
+	$api = new RestApiRequest($instanceUrl, $accessToken);
+	$query = "SELECT ContactId FROM User WHERE Id = '$userId'";
+	$resp = $api->query($query);
+
+	return $resp->getRecord()["ContactId"];
+    }
+
 
     public function getUserInfo($accessToken, $instanceUrl){
 
-	$req = new RestApiRequest($instanceUrl, $accessToken);
+        $req = new RestApiRequest($instanceUrl, $accessToken);
 
-	$resp = $req->send($this->userInfoEndpoint . $accessToken);
-		
-	return $resp->getBody();
+        $resp = $req->send($this->userInfoEndpoint . $accessToken);
+            
+        return $resp->getBody();
     }
 }
