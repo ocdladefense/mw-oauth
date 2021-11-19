@@ -33,9 +33,7 @@ require(__DIR__ . "/AccessBooksOnline/Access.php");
 
 
 $wgAutoloadClasses['SpecialOAuthEndpoint'] = __DIR__ . '/SpecialOAuthEndpoint.php';
-$wgAutoloadClasses['OAuthHooks'] = __DIR__ . '/OAuthHooks.php';
-
-
+$wgAutoloadClasses['OAuthHooks'] = __DIR__ . '/includes/OAuthHooks.php';
 
 $wgHooks['PersonalUrls'][] = 'OAuthHooks::onPersonalUrls';
 $wgHooks['BeforeInitialize'][] = 'OAuthHooks::onBeforeInitialize';
