@@ -31,9 +31,6 @@ $wgWhitelistRead[] = "Special:OAuthEndpoint/login";
 
 
 # Autoload classes and files
-require(__DIR__ . "/AccessWhitelistedNamespaces/Access.php");
-require(__DIR__ . "/AccessBooksOnline/Access.php");
-
 $wgAutoloadClasses['SpecialOAuthEndpoint'] = __DIR__ . '/SpecialOAuthEndpoint.php';
 $wgAutoloadClasses['OAuthHooks'] = __DIR__ . '/OAuthHooks.php';
 
@@ -41,8 +38,6 @@ $wgAutoloadClasses['OAuthHooks'] = __DIR__ . '/OAuthHooks.php';
 // Register Hooks
 $wgHooks['PersonalUrls'][] = 'OAuthHooks::onPersonalUrls';
 $wgHooks['BeforeInitialize'][] = 'OAuthHooks::onBeforeInitialize';
-$wgHooks['UserGetRights'][] = 'AccessWhitelistedNamespaces\Access::onUserGetRights';
-$wgHooks['UserGetRights'][] = 'AccessBooksOnline\Access::onUserGetRights';
 
 
 //$wgHooks['BeforePageDisplay'][] = 'OAuthHooks::onBeforePageDisplay';
