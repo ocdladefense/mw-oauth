@@ -1,91 +1,27 @@
  <?php 
 
-//use AccessWhitelistNamespace\Access as WhitelistNamespace;
-//use AccessBooksOnline\Access as BooksOnline;
-
-
 class OAuthHooks {
 
     private static $loginUrl = "Special:OAuthEndpoint/login";
 
+
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
-/**
-	global $autoLogin;
+        if(!self::isOauthEndpoint($title)) {
 
-        if(self::isWhitelisted($title)) return true;
+            if(session_id() == '') wfSetupSession();
 
-        if(!self::hasAccess($user)){
-
-	    // Need this to access the session
-	    if(session_id() == '') wfSetupSession();
-
-	    $_SESSION["redirect"] = $title->mUrlform;
-
-            header("Location: " . self::getLoginUrl());
-
-            exit;
+            $_SESSION["redirect"] = $title->mPrefixedText;
         }
-*/
 
 	    return true;
     }
 
 
+    public static function isOauthEndpoint($title) {
 
-	public static function onUserGetRights( User $user, array &$aRights ) {
+        return strpos($title, "OAuthEndpoint") != false;
 
-        // global $wgWhitelistRead, $wgRequest;
-
-        // $title = $wgR
-
-        // if($in)
-
-        if(WhitelistNamespace::hasAccess()) $aRights[] = "read";
-
-        //if(BooksOnline::hasAccess($user, $aRights)) $aRights[] = "read";
-        
-        //var_dump($aRights);exit;
-	    return true;
-    }
-
-
-    public static function getLoginUrl(){
-
-        return "/index.php/" . self::$loginUrl;
-    }
-
-
-    public static function isWhitelisted($title) {
-
-        global $wgWhitelistRead, $wgExtraNamespaces, $wgWhitelistedNamespaces;
-
-        $standardNamespaces = array(0 => null, -1 => "Special");
-
-        $allNamespaces = $standardNamespaces + $wgExtraNamespaces;
-
-        $namespace = $allNamespaces[$title->mNamespace];
-
-        $pageName = !empty($namespace) ? "$namespace:" . $title->mTextform : $title->mTextform;
-
-        // var_dump($pageName);exit;
-
-        if(self::isWhitelistedNamespace($namespace)){
-
-            $wgWhitelistRead[] = $pageName;
-        }
-    
-        return in_array($pageName, $wgWhitelistRead);
-    }
-
-
-    public static function isWhitelistedNamespace($namespace) {
-
-        global $wgWhitelistedNamespaces, $wgExtraNamespaces;
-
-        $namespaceInt = array_search($namespace, $wgExtraNamespaces);
-    
-        return in_array($namespaceInt, $wgWhitelistedNamespaces);
     }
 
 
@@ -120,8 +56,6 @@ class OAuthHooks {
             unset($personal_urls["anonlogin"]);
         }
 	
-	return true;
+	    return true;
     }
-
-    public static function onBeforePageDisplay(\OutputPage $out, \Skin $skin) {return true;}
 }

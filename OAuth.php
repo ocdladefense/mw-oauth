@@ -22,29 +22,33 @@ $wgExtensionCredits['specialpage'][] = array(
 	'version' => '2.0.2',
 );
 
+
+
 // White list the special page, so it is public.
 $wgWhitelistRead[] = "Special:OAuthEndpoint"; 
 $wgWhitelistRead[] = "Special:OAuthEndpoint/login";
 
-# Location of the SpecialMyExtension class (Tell MediaWiki to load this file)
 
+
+# Autoload classes and files
 require(__DIR__ . "/AccessWhitelistedNamespaces/Access.php");
 require(__DIR__ . "/AccessBooksOnline/Access.php");
-
 
 $wgAutoloadClasses['SpecialOAuthEndpoint'] = __DIR__ . '/SpecialOAuthEndpoint.php';
 $wgAutoloadClasses['OAuthHooks'] = __DIR__ . '/OAuthHooks.php';
 
+
+// Register Hooks
 $wgHooks['PersonalUrls'][] = 'OAuthHooks::onPersonalUrls';
 $wgHooks['BeforeInitialize'][] = 'OAuthHooks::onBeforeInitialize';
+$wgHooks['UserGetRights'][] = 'AccessWhitelistedNamespaces\Access::onUserGetRights';
+$wgHooks['UserGetRights'][] = 'AccessBooksOnline\Access::onUserGetRights';
+
+
 //$wgHooks['BeforePageDisplay'][] = 'OAuthHooks::onBeforePageDisplay';
 //$wgHooks['UserGetAllRights'][] = 'OAuthHooks::onUserGetAllRights';
-//$wgHooks['UserGetRights'][] = 'AccessWhitelistedNamespaces\Access::onUserGetRights';
-$wgHooks['UserGetRights'][] = 'AccessBooksOnline\Access::onUserGetRights';
-$wgHooks['UserGetRights'][] = 'AccessBooksOnline\Access::onUserGetRights2';
+//$wgHooks['UserGetRights'][] = 'AccessBooksOnline\Access::onUserGetRights2';
 //$wgHooks['UserGetRightsRemove'][] = 'OAuthHooks::onUserGetRightsRemove';
-
-
 
 
 # Tell MediaWiki about the new special page and its class name

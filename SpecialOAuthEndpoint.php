@@ -26,7 +26,7 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
 	if(session_id() == '') wfSetupSession();
         
-	global $oauth_config;
+	global $oauth_config, $wgRequest;
 
         $config = new OAuthConfig($oauth_config);
 

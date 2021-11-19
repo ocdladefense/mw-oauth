@@ -6,8 +6,6 @@ class Access {
 
     public static function onUserGetRights( \User $user, array &$aRights ) {
 
-	return true;
-
         if(self::hasAccess()) $aRights[] = "read";
 	        
         return true;
