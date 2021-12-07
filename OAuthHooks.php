@@ -4,6 +4,8 @@ class OAuthHooks {
 
     private static $loginUrl = "Special:OAuthEndpoint/login";
 
+    private static $logoutUrl = "Special:UserLogout";
+
 
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
@@ -11,7 +13,10 @@ class OAuthHooks {
 
             if(session_id() == '') wfSetupSession();
 
-            $_SESSION["redirect"] = $title->mPrefixedText;
+            if(!self::isUserLogout($title)) {
+                
+                $_SESSION["redirect"] = $title->mPrefixedText;
+            }
         }
 
 	    return true;
@@ -21,6 +26,13 @@ class OAuthHooks {
     public static function isOauthEndpoint($title) {
 
         return strpos($title, "OAuthEndpoint") != false;
+
+    }
+
+
+    public static function isUserLogout($title) {
+
+        return $title->mPrefixedText == self::$logoutUrl;
 
     }
 
