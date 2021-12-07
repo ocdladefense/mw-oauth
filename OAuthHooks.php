@@ -13,6 +13,8 @@ class OAuthHooks {
 
             if(session_id() == '') wfSetupSession();
 
+            // Don't set up the redirect if the user has logged out.
+            // Empty redirect sends user to the main page.
             if(!self::isUserLogout($title)) {
                 
                 $_SESSION["redirect"] = $title->mPrefixedText;
