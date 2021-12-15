@@ -56,22 +56,23 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         $resp = $oauth->authorize();
 
-	$_SESSION["access-token"] = $resp->getAccessToken();
-	$_SESSION["instance-url"] = $resp->getInstanceUrl();
-    
+        $_SESSION["access-token"] = $resp->getAccessToken();
+        $_SESSION["instance-url"] = $resp->getInstanceUrl();
+        
         $sfUserInfo = $this->getUserInfo($resp->getAccessToken(), $resp->getInstanceUrl());
 
-	$contactId = $this->getContactId($resp->getInstanceUrl(), $resp->getAccessToken(), $sfUserInfo["user_id"]);
+        $contactId = $this->getContactId($resp->getInstanceUrl(), $resp->getAccessToken(), $sfUserInfo["user_id"]);
 
-	$_SESSION["sf-contact-id"] = $contactId;
+        $_SESSION["sf-contact-id"] = $contactId;
 
 
         $username = $this->formatMWUsername($sfUserInfo["preferred_username"]);
         $email = $sfUserInfo["email"];
+        $userType = $sfUserInfo["user_type"];
 
-        $user = !$this->userExists($username) ? $this->createUser($username, $email) : $this->loadUser($username);
+        $user = !$this->userExists($username) ? $this->createUser($username, $email, $userType) : $this->loadUser($username, $userType);
 
-	$this->getContext()->setUser($user);
+	    $this->getContext()->setUser($user);
 
         $this->logUserIn();
 
@@ -119,17 +120,27 @@ class SpecialOAuthEndpoint extends SpecialPage {
     }
 
 
-    public function loadUser($username){
+    public function loadUser($username, $userType){
         
-        return User::newFromName($username);
+        $user = User::newFromName($username);
+
+        $currentGroups = $user->getGroups();
+        
+        // If the user is a Salesforce "STANDARD" user, add the "sysop" permission group to the user.
+        if($userType == "STANDARD" && !in_array("sysop", $currentGroups)) $user->addGroup("sysop");
+
+        return $user;
     }
 
 
-    public function createUser($username, $email) {
+    public function createUser($username, $email, $userType) {
 
         $user = User::createNew($username, array());
         $user->setRealName($username);
         $user->setEmail($email);
+
+        if($userType == "STANDARD") $user->addGroup("sysop");
+
         $user->setToken();
 
         return $user;
@@ -140,7 +151,7 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         global $wgUser;
 
-	$user = $this->getUser();
+	    $user = $this->getUser();
         $user->setCookies();
         $user->saveSettings();
         $wgUser = $user;
@@ -148,11 +159,11 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     public function getContactId($instanceUrl, $accessToken, $userId){
     
-	$api = new RestApiRequest($instanceUrl, $accessToken);
-	$query = "SELECT ContactId FROM User WHERE Id = '$userId'";
-	$resp = $api->query($query);
+        $api = new RestApiRequest($instanceUrl, $accessToken);
+        $query = "SELECT ContactId FROM User WHERE Id = '$userId'";
+        $resp = $api->query($query);
 
-	return $resp->getRecord()["ContactId"];
+        return $resp->getRecord()["ContactId"];
     }
 
 
