@@ -20,6 +20,6 @@ DB_MASTER = DB_PRIMARY
 
 ### Installation
 1. Add the extension to the extensions directory.
-2. Copy the "config/config-example.php" file to "extensios/config.php", and add your credentials.
+2. Copy the "$oauth_config" array to "LocalSettingsOverrides.php", and add your credentials.
 2. Add the extension to the array of extensions in "LocalSettings.php" and set the active value to true. 
  
