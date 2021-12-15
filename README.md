@@ -1,5 +1,5 @@
 ﻿
-# wiki-extension-oauth
+# mw-oauth (A MediaWiki OAuth extension) Version-1
 
 ### OAuth and Login Related Links.
 1. https://www.mediawiki.org/wiki/Extension:OAuth2_Client
@@ -18,18 +18,8 @@ DB_REPLICA = -1
 DB_PRIMARY = -2
 DB_MASTER = DB_PRIMARY
 
-
-
-
-#### Features ???
-This automates the recommended code checkers for PHP and JavaScript code in Wikimedia projects
-(see https://www.mediawiki.org/wiki/Continuous_integration/Entry_points).
-To take advantage of this automation.
-
-1. install nodejs, npm, and PHP composer
-2. change to the extension's directory
-3. `npm install`
-4. `composer install`
-
-Once set up, running `npm test` and `composer test` will run automated code checks.
+### Installation
+1. Add the extension to the extensions directory.
+2. Copy the "config/config-example.php" file to "extensios/config.php", and add your credentials.
+2. Add the extension to the array of extensions in "LocalSettings.php" and set the active value to true. 
  
