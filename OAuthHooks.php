@@ -9,7 +9,7 @@ class OAuthHooks {
 
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
-        if(!self::isOauthEndpoint($title)) {
+        if(!self::isOauthEndpoint($title) && self::isValidRediect($title)) {
 
             if(session_id() == '') wfSetupSession();
 
@@ -22,6 +22,15 @@ class OAuthHooks {
         }
 
 	    return true;
+    }
+
+    public static function isValidRediect($title) {
+
+        $parts = explode(".", $title->mUrlform);
+
+        if(!empty($parts[1])) return false;
+
+        return true;
     }
 
 
