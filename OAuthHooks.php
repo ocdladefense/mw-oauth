@@ -13,8 +13,8 @@ class OAuthHooks {
 
             if(session_id() == '') wfSetupSession();
 
-            // Don't set up the redirect if the user has logged out.
-            // Empty redirect sends user to the main page.
+            // Don't save the redirect to the session if the referer is the logout page.
+            // An empty redirect sends the user to the main page.
             if(!self::isUserLogout($title)) {
                 
                 $_SESSION["redirect"] = $title->mPrefixedText;
@@ -71,7 +71,7 @@ class OAuthHooks {
         } else {
             
             $personal_urls["login"]["text"] = "OCDLA login";
-            $personal_urls["login"]["href"] = "$wgScriptPath/index.php/" . self::$loginUrl;
+            $personal_urls["login"]["href"] = "$wgScriptPath/" . self::$loginUrl;
             $personal_urls["login"]["active"] = true;
 
             unset($personal_urls["anonuserpage"]);
