@@ -148,7 +148,7 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         $redirect = !empty($sessionRedirect) ? $sessionRedirect : $this->defaultRedirect;
 
-        return "$wgScriptPath/index.php/$redirect";
+        return "$wgScriptPath/$redirect";
     }
 
 

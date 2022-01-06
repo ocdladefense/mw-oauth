@@ -36,14 +36,10 @@ $wgAutoloadClasses['OAuthHooks'] = __DIR__ . '/OAuthHooks.php';
 
 
 // Register Hooks
-$wgHooks['PersonalUrls'][] = 'OAuthHooks::onPersonalUrls';
 $wgHooks['BeforeInitialize'][] = 'OAuthHooks::onBeforeInitialize';
 
-
-//$wgHooks['BeforePageDisplay'][] = 'OAuthHooks::onBeforePageDisplay';
-//$wgHooks['UserGetAllRights'][] = 'OAuthHooks::onUserGetAllRights';
-//$wgHooks['UserGetRights'][] = 'AccessBooksOnline\Access::onUserGetRights2';
-//$wgHooks['UserGetRightsRemove'][] = 'OAuthHooks::onUserGetRightsRemove';
+// Uncomment to override MediaWiki's default login url.
+//$wgHooks['PersonalUrls'][] = 'OAuthHooks::onPersonalUrls';
 
 
 # Tell MediaWiki about the new special page and its class name
