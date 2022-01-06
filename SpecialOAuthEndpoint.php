@@ -53,19 +53,32 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         // Build the request and send the authorization code returned in the previous step.
         $oauth = OAuthRequest::newAccessTokenRequest($config, $this->oauthFlow);
-
         $resp = $oauth->authorize();
 
-        $_SESSION["access-token"] = $resp->getAccessToken();
-        $_SESSION["instance-url"] = $resp->getInstanceUrl();
+        // Initialize some important variables to identify this user 
+        // on the Salesforce platform.
+        $instanceUrl = $resp->getInstanceUrl();
+        $accessToken = $resp->getAccessToken();
+        $userId = null;
+        $contactId = null;
         
-        $sfUserInfo = $this->getUserInfo($resp->getAccessToken(), $resp->getInstanceUrl());
 
-        $contactId = $this->getContactId($resp->getInstanceUrl(), $resp->getAccessToken(), $sfUserInfo["user_id"]);
+        // Run the OAuth 2.0 user query.
+        $sfUserInfo = $this->getUserInfo($instanceUrl, $accessToken);
+        $userId = $sfUserInfo["user_id"];
 
+        // Retrieve the 
+        $contactId = $this->getContactId($instanceUrl, $accessToken, $userId);
+
+
+        $_SESSION["instance-url"] = $instanceUrl;
+        $_SESSION["access-token"] = $accessToken;
+        $_SESSION["sf-user-id"] = $userId; // Not currently used but let's be consistent.
         $_SESSION["sf-contact-id"] = $contactId;
+        
 
 
+        
         $username = $this->formatMWUsername($sfUserInfo["preferred_username"]);
         $email = $sfUserInfo["email"];
         $userType = $sfUserInfo["user_type"];
@@ -80,6 +93,34 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         header("Location: $url");
     }
+
+
+
+    public function getUserInfo($instanceUrl, $accessToken){
+
+        $req = new RestApiRequest($instanceUrl, $accessToken);
+
+        $resp = $req->send($this->userInfoEndpoint . $accessToken);
+            
+        return $resp->getBody();
+    }
+
+
+    // For STANDARD type users like membernation@ocdla.com(.ocdpartial)
+    // This will return NULL.
+    // What effect will this have on downstream queries that rely on there
+    // being a ContactId in the MediaWiki user's session?
+    public function getContactId($instanceUrl, $accessToken, $userId){
+    
+        $api = new RestApiRequest($instanceUrl, $accessToken);
+        $query = "SELECT ContactId FROM User WHERE Id = '$userId'";
+        $resp = $api->query($query);
+
+        return $resp->getRecord()["ContactId"];
+    }
+
+
+    
 
 
     public function shouldRedirectToIdentityProvider(){
@@ -157,22 +198,4 @@ class SpecialOAuthEndpoint extends SpecialPage {
         $wgUser = $user;
     }
 
-    public function getContactId($instanceUrl, $accessToken, $userId){
-    
-        $api = new RestApiRequest($instanceUrl, $accessToken);
-        $query = "SELECT ContactId FROM User WHERE Id = '$userId'";
-        $resp = $api->query($query);
-
-        return $resp->getRecord()["ContactId"];
-    }
-
-
-    public function getUserInfo($accessToken, $instanceUrl){
-
-        $req = new RestApiRequest($instanceUrl, $accessToken);
-
-        $resp = $req->send($this->userInfoEndpoint . $accessToken);
-            
-        return $resp->getBody();
-    }
 }
