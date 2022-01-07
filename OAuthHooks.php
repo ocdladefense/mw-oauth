@@ -25,7 +25,7 @@ class OAuthHooks {
 
             if(session_id() == '') wfSetupSession();
             $_SESSION["redirect"] = $title->mUrlform;
-        }
+        }   
 
 	    return true;  
     }
