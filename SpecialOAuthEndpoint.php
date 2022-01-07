@@ -16,6 +16,10 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     private $userInfoEndpoint = "/services/oauth2/userinfo?access_token=";
 
+
+
+
+    
     public function __construct() {
 
         parent::__construct("OAuthEndpoint");
@@ -24,9 +28,11 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     public function execute($parameter) {
 
-	if(session_id() == '') wfSetupSession();
+        global $oauth_config, $wgRequest;
         
-	global $oauth_config, $wgRequest;
+        if(session_id() == '') wfSetupSession();
+        
+	    
 
         $config = new OAuthConfig($oauth_config);
 
@@ -66,32 +72,31 @@ class SpecialOAuthEndpoint extends SpecialPage {
         // Run the OAuth 2.0 user query.
         $sfUserInfo = $this->getUserInfo($instanceUrl, $accessToken);
         $userId = $sfUserInfo["user_id"];
+        $username = $sfUserInfo["preferred_username"];
+        $email = $sfUserInfo["email"];
+        $userType = $sfUserInfo["user_type"];
 
-        // Retrieve the 
+        // Retrieve the User.ContactId field from Salesforce.
+        // NOTE: STANDARD users won't have one.
         $contactId = $this->getContactId($instanceUrl, $accessToken, $userId);
+
+
+        // Oh MediaWiki... why so many functions to log the user in???
+        $username = $this->formatMWUsername($username);
+        $user = !$this->userExists($username) ? $this->createUser($username, $email, $userType) : $this->loadUser($username, $userType);
+	    $this->getContext()->setUser($user);
+        $this->logUserIn();
+
+
 
 
         $_SESSION["instance-url"] = $instanceUrl;
         $_SESSION["access-token"] = $accessToken;
         $_SESSION["sf-user-id"] = $userId; // Not currently used but let's be consistent.
         $_SESSION["sf-contact-id"] = $contactId;
-        
 
 
-        
-        $username = $this->formatMWUsername($sfUserInfo["preferred_username"]);
-        $email = $sfUserInfo["email"];
-        $userType = $sfUserInfo["user_type"];
-
-        $user = !$this->userExists($username) ? $this->createUser($username, $email, $userType) : $this->loadUser($username, $userType);
-
-	    $this->getContext()->setUser($user);
-
-        $this->logUserIn();
-
-        $url = $this->getRedirect();
-
-        header("Location: $url");
+        header("Location: " . $this->getRedirect());
     }
 
 
@@ -144,9 +149,8 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         global $wgScriptPath;
 
-        $sessionRedirect = $_SESSION["redirect"];
 
-        $redirect = !empty($sessionRedirect) ? $sessionRedirect : $this->defaultRedirect;
+        $redirect = $_SESSION["redirect"] ?: $this->defaultRedirect;
 
         return "$wgScriptPath/$redirect";
     }
