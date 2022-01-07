@@ -33,15 +33,9 @@ class OAuthHooks {
      */
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
-
-        // var_dump($title); exit;
-
-        // $foo = $title->mPrefixedText;
-        // var_dump($title); exit;
-
-        global $wgExtraNamespaces;
+        // global $wgExtraNamespaces;
         
-        $namespaceName = $wgExtraNamespaces[$title->mNamespace];
+        // $namespaceName = $wgExtraNamespaces[$title->mNamespace];
 
 
         // Don't save the redirect to the session if the referer is the logout page.
@@ -49,16 +43,9 @@ class OAuthHooks {
         if(!self::isLoginLogoutPage($title) && self::isValidRedirect($title)) {
 
             if(session_id() == '') wfSetupSession();
-            $_SESSION["redirect"] = !empty($namespaceName) ? ($namespaceName . ":" . $title->mUrlform) : $title->mUrlform;
-        }   
-
-        // public static function &makeTitle( $ns, $title, $fragment = '', $interwiki = '' ) {
-        // $myTitle = Title::makeTitle($title->mNamespace, $title->mTextform);
-            
-            //$title->Title::newFromText("Public:Subscriptions");
-
-        // $foo = $title->mPrefixedText;
-        // var_dump($myTitle); exit;
+            $_SESSION["redirect"] = $title->getPrefixedUrl();
+        }
+         
 	    return true;  
     }
 
