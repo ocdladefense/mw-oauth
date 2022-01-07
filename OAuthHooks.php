@@ -1,15 +1,30 @@
 <?php 
 
+
+
 class OAuthHooks {
 
+    // Determine if an incoming request is for a
+    // login-related endpoint.
     private static $loginTitle = "OAuthEndpoint";
 
+
+    // Used in Personal URLs.
     private static $loginUrl = "Special:OAuthEndpoint/login";
 
+
+    // Determine if an incoming request is for a
+    // logout-related endpoint.
     private static $logoutTitle = "UserLogout";
 
+
+    // Temporary work around.  Avoid executing our initialization function for 
+    // real files.  For example, don't set the redirect to a JavaScript or CSS file.
     private static $fileExtensionChar = ".";
     
+
+
+
     /**
      * What is the goal of this function?
      * // NOTE: $title object contains the equivalent
@@ -19,20 +34,39 @@ class OAuthHooks {
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
 
+        // var_dump($title); exit;
+
+        // $foo = $title->mPrefixedText;
+        // var_dump($title); exit;
+
+        global $wgExtraNamespaces;
+        
+        $namespaceName = $wgExtraNamespaces[$title->mNamespace];
+
+
         // Don't save the redirect to the session if the referer is the logout page.
         // An empty redirect sends the user to the main page.
         if(!self::isLoginLogoutPage($title) && self::isValidRedirect($title)) {
 
             if(session_id() == '') wfSetupSession();
-            $_SESSION["redirect"] = $title->mUrlform;
+            $_SESSION["redirect"] = !empty($namespaceName) ? ($namespaceName . ":" . $title->mUrlform) : $title->mUrlform;
         }   
 
+        // public static function &makeTitle( $ns, $title, $fragment = '', $interwiki = '' ) {
+        // $myTitle = Title::makeTitle($title->mNamespace, $title->mTextform);
+            
+            //$title->Title::newFromText("Public:Subscriptions");
+
+        // $foo = $title->mPrefixedText;
+        // var_dump($myTitle); exit;
 	    return true;  
     }
 
 
-    public static function isLoginLogoutPage($title) {
 
+
+    public static function isLoginLogoutPage($title) {
+        
         return self::isUserLogin($title) || self::isUserLogout($title);
     }
 
@@ -53,7 +87,8 @@ class OAuthHooks {
 
         $parts = explode(self::$fileExtensionChar, $title->mUrlform);
 
-        return count($parts) === 1; // Assume this means it has a file extension.
+        // Assume this means it does not have a file extension.
+        return count($parts) === 1; 
     }
 
     
