@@ -16,6 +16,10 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     private $userInfoEndpoint = "/services/oauth2/userinfo?access_token=";
 
+
+
+
+    
     public function __construct() {
 
         parent::__construct("OAuthEndpoint");
@@ -24,9 +28,11 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
     public function execute($parameter) {
 
-	if(session_id() == '') wfSetupSession();
+        global $oauth_config, $wgRequest;
         
-	global $oauth_config, $wgRequest;
+        if(session_id() == '') wfSetupSession();
+        
+	    
 
         $config = new OAuthConfig($oauth_config);
 
@@ -53,33 +59,73 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         // Build the request and send the authorization code returned in the previous step.
         $oauth = OAuthRequest::newAccessTokenRequest($config, $this->oauthFlow);
-
         $resp = $oauth->authorize();
 
-        $_SESSION["access-token"] = $resp->getAccessToken();
-        $_SESSION["instance-url"] = $resp->getInstanceUrl();
+        // Initialize some important variables to identify this user 
+        // on the Salesforce platform.
+        $instanceUrl = $resp->getInstanceUrl();
+        $accessToken = $resp->getAccessToken();
+        $userId = null;
+        $contactId = null;
         
-        $sfUserInfo = $this->getUserInfo($resp->getAccessToken(), $resp->getInstanceUrl());
 
-        $contactId = $this->getContactId($resp->getInstanceUrl(), $resp->getAccessToken(), $sfUserInfo["user_id"]);
-
-        $_SESSION["sf-contact-id"] = $contactId;
-
-
-        $username = $this->formatMWUsername($sfUserInfo["preferred_username"]);
+        // Run the OAuth 2.0 user query.
+        $sfUserInfo = $this->getUserInfo($instanceUrl, $accessToken);
+        $userId = $sfUserInfo["user_id"];
+        $username = $sfUserInfo["preferred_username"];
         $email = $sfUserInfo["email"];
         $userType = $sfUserInfo["user_type"];
 
+        // Retrieve the User.ContactId field from Salesforce.
+        // NOTE: STANDARD users won't have one.
+        $contactId = $this->getContactId($instanceUrl, $accessToken, $userId);
+
+
+        // Oh MediaWiki... why so many functions to log the user in???
+        $username = $this->formatMWUsername($username);
         $user = !$this->userExists($username) ? $this->createUser($username, $email, $userType) : $this->loadUser($username, $userType);
-
 	    $this->getContext()->setUser($user);
-
         $this->logUserIn();
 
-        $url = $this->getRedirect();
 
-        header("Location: $url");
+
+
+        $_SESSION["instance-url"] = $instanceUrl;
+        $_SESSION["access-token"] = $accessToken;
+        $_SESSION["sf-user-id"] = $userId; // Not currently used but let's be consistent.
+        $_SESSION["sf-contact-id"] = $contactId;
+
+
+        header("Location: " . $this->getRedirect());
     }
+
+
+
+    public function getUserInfo($instanceUrl, $accessToken){
+
+        $req = new RestApiRequest($instanceUrl, $accessToken);
+
+        $resp = $req->send($this->userInfoEndpoint . $accessToken);
+            
+        return $resp->getBody();
+    }
+
+
+    // For STANDARD type users like membernation@ocdla.com(.ocdpartial)
+    // This will return NULL.
+    // What effect will this have on downstream queries that rely on there
+    // being a ContactId in the MediaWiki user's session?
+    public function getContactId($instanceUrl, $accessToken, $userId){
+    
+        $api = new RestApiRequest($instanceUrl, $accessToken);
+        $query = "SELECT ContactId FROM User WHERE Id = '$userId'";
+        $resp = $api->query($query);
+
+        return $resp->getRecord()["ContactId"];
+    }
+
+
+    
 
 
     public function shouldRedirectToIdentityProvider(){
@@ -103,9 +149,8 @@ class SpecialOAuthEndpoint extends SpecialPage {
 
         global $wgScriptPath;
 
-        $sessionRedirect = $_SESSION["redirect"];
 
-        $redirect = !empty($sessionRedirect) ? $sessionRedirect : $this->defaultRedirect;
+        $redirect = $_SESSION["redirect"] ?: $this->defaultRedirect;
 
         return "$wgScriptPath/$redirect";
     }
@@ -157,22 +202,4 @@ class SpecialOAuthEndpoint extends SpecialPage {
         $wgUser = $user;
     }
 
-    public function getContactId($instanceUrl, $accessToken, $userId){
-    
-        $api = new RestApiRequest($instanceUrl, $accessToken);
-        $query = "SELECT ContactId FROM User WHERE Id = '$userId'";
-        $resp = $api->query($query);
-
-        return $resp->getRecord()["ContactId"];
-    }
-
-
-    public function getUserInfo($accessToken, $instanceUrl){
-
-        $req = new RestApiRequest($instanceUrl, $accessToken);
-
-        $resp = $req->send($this->userInfoEndpoint . $accessToken);
-            
-        return $resp->getBody();
-    }
 }

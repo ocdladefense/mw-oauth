@@ -1,18 +1,29 @@
- <?php 
+<?php 
 
 class OAuthHooks {
 
+    private static $loginTitle = "OAuthEndpoint";
+
     private static $loginUrl = "Special:OAuthEndpoint/login";
 
-    private static $logoutUrl = "Special:UserLogout";
+    private static $logoutTitle = "UserLogout";
 
-
+    private static $fileExtensionChar = ".";
+    
+    /**
+     * What is the goal of this function?
+     * // NOTE: $title object contains the equivalent
+     * of getters and setters so accessing some properties
+     *  will result in other properties being loaded from the database.
+     */
     public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
 
-        if(!self::isOauthEndpoint($title) && self::isValidRediect($title)) {
 
-            if(session_id() == '') wfSetupSession();
+        // Don't save the redirect to the session if the referer is the logout page.
+        // An empty redirect sends the user to the main page.
+        if(!self::isLoginLogoutPage($title) && self::isValidRedirect($title)) {
 
+<<<<<<< HEAD
             // Don't save the redirect to the session if the referer is the logout page.
             // An empty redirect sends the user to the main page.
             if(!self::isUserLogout($title)) {
@@ -20,37 +31,39 @@ class OAuthHooks {
                 $_SESSION["redirect"] = $title->getPrefixedUrl();
             }
         }
+=======
+            if(session_id() == '') wfSetupSession();
+            $_SESSION["redirect"] = $title->mUrlform;
+        }   
+>>>>>>> ee1561552a4af040afad24096eb490b99db25670
 
-	    return true;
-    }
-
-    public static function isValidRediect($title) {
-
-        $parts = explode(".", $title->mUrlform);
-
-        if(!empty($parts[1])) return false;
-
-        return true;
+	    return true;  
     }
 
 
-    public static function isOauthEndpoint($title) {
+    public static function isLoginLogoutPage($title) {
 
-        return strpos($title, "OAuthEndpoint") != false;
+        return self::isUserLogin($title) || self::isUserLogout($title);
+    }
 
+
+    public static function isUserLogin($title) {
+
+        return strpos($title->mUrlform, self::$loginTitle) !== false;
     }
 
 
     public static function isUserLogout($title) {
 
-        return $title->mPrefixedText == self::$logoutUrl;
-
+        return $title->mUrlform == self::$logoutTitle;
     }
 
 
-    public static function hasAccess($user) {
+    public static function isValidRedirect($title) {
 
-        return self::isLoggedIn($user);
+        $parts = explode(self::$fileExtensionChar, $title->mUrlform);
+
+        return count($parts) === 1; // Assume this means it has a file extension.
     }
 
     
