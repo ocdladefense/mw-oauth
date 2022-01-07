@@ -23,7 +23,6 @@ class OAuthHooks {
         // An empty redirect sends the user to the main page.
         if(!self::isLoginLogoutPage($title) && self::isValidRedirect($title)) {
 
-<<<<<<< HEAD
             // Don't save the redirect to the session if the referer is the logout page.
             // An empty redirect sends the user to the main page.
             if(!self::isUserLogout($title)) {
@@ -31,11 +30,6 @@ class OAuthHooks {
                 $_SESSION["redirect"] = $title->getPrefixedUrl();
             }
         }
-=======
-            if(session_id() == '') wfSetupSession();
-            $_SESSION["redirect"] = $title->mUrlform;
-        }   
->>>>>>> ee1561552a4af040afad24096eb490b99db25670
 
 	    return true;  
     }
