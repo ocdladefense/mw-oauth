@@ -17,7 +17,7 @@ class OAuthHooks {
             // An empty redirect sends the user to the main page.
             if(!self::isUserLogout($title)) {
                 
-                $_SESSION["redirect"] = $title->mPrefixedText;
+                $_SESSION["redirect"] = $title->getPrefixedUrl();
             }
         }
 
